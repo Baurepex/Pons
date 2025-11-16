@@ -6,13 +6,13 @@
     let active = false;
     let currentTranslation = null;
 
-    console.log('[Info] PONS Latin Translator geladen. Toggle mit Shift+Alt+X');
+    console.log('on');
 
     // Toggle durch Tastenkombination (Shift + Alt + X)
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
             active = !active;
-            console.log('[Info] Übersetzer:', active ? 'AKTIV' : 'INAKTIV');
+            console.log('[Info]', active ? 'A' : 'P');
             reattachAll();
         }
     });
