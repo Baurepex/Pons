@@ -1,4 +1,4 @@
-// PONS Latin Translator – Stable Toggle Version (Shift+Alt+X)
+
 
 (function() {
     'use strict';
@@ -8,7 +8,7 @@
 
     console.log('on');
 
-    // Toggle durch Tastenkombination (Shift + Alt + X)
+ 
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
             active = !active;
