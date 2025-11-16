@@ -1,4 +1,4 @@
-// PONS Latin Translator – Stable Toggle Version (Ctrl+Shift+L)
+// PONS Latin Translator – Stable Toggle Version (Shift+Alt+X)
 
 (function() {
     'use strict';
@@ -6,15 +6,13 @@
     let active = false;
     let currentTranslation = null;
 
-    console.log('[Info] PONS Latin Translator geladen. Toggle mit Ctrl+Shift+L');
+    console.log('[Info] PONS Latin Translator geladen. Toggle mit Shift+Alt+X');
 
-    // Toggle durch Tastenkombination
+    // Toggle durch Tastenkombination (Shift + Alt + X)
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
+        if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
             active = !active;
             console.log('[Info] Übersetzer:', active ? 'AKTIV' : 'INAKTIV');
-
-            // WICHTIG: Listener refreshen, PONS überschreibt sonst unsere
             reattachAll();
         }
     });
@@ -38,7 +36,6 @@
         const text = editable.innerText;
 
         if (active) {
-            // PONS-Enter BLOCKIEREN
             e.preventDefault();
             e.stopPropagation();
 
@@ -47,7 +44,6 @@
                 insertTranslation(translation);
             });
         } else {
-            // Normaler PONS-Flow
             currentTranslation = null;
         }
     }
@@ -62,7 +58,6 @@
         editables.forEach(attachListeners);
     }
 
-    // Beobachtet neue Editables
     const observer = new MutationObserver(() => {
         reattachAll();
     });
