@@ -30,6 +30,14 @@
             })
         })
             .then(res => res.json())
+            .then(json => {
+    console.log('[Gemini]', JSON.stringify(json));
+    callback(json.candidates[0].content.parts[0].text.trim());
+})
+.catch(err => {
+    console.error('[Fehler]', err);
+    callback(null);
+});
             .then(json => callback(json.candidates[0].content.parts[0].text.trim()))
             .catch(() => callback(null));
     }
