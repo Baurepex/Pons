@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    const GROQ_API_KEY = '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'; // <-- eintragen
+    const GROQ_API_KEY = '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'; // <-- eintragen
     const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
     let active = false;
