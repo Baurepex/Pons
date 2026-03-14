@@ -1,123 +1,88 @@
-(function() {
+(function () {
     'use strict';
 
-    const API_KEY = "AIzaSyDhnE8SegajM1wHbBFV5dK66ZBR89YZwdE";
+    const GROQ_API_KEY = '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'; // <-- eintragen
+    const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
     let active = false;
-    let currentTranslation = null;
+    console.log('[Groq Translator] Geladen');
 
-    console.log("on");
-
-    document.addEventListener("keydown", (e) => {
-        if (e.shiftKey && e.altKey && e.key.toLowerCase() === "x") {
+    document.addEventListener('keydown', (e) => {
+        if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
             active = !active;
-            console.log("[Info]", active ? "A" : "P");
+            console.log('[Info]', active ? 'Aktiv' : 'Pausiert');
             reattachAll();
         }
     });
 
-    async function fetchTranslation(text, callback) {
-
-        try {
-
-            const res = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
+    function fetchTranslation(text, callback) {
+        console.log('[Groq] Sende Anfrage für:', text);
+        fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: GROQ_MODEL,
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Latein-Übersetzer. Übersetze den lateinischen Text ins Deutsche. Antworte NUR mit der Übersetzung, ohne Erklärungen.'
                     },
-                    body: JSON.stringify({
-                        contents: [
-                            {
-                                parts: [
-                                    {
-                                        text: `Übersetze folgenden lateinischen Text ins Deutsche. Gib nur die deutsche Übersetzung zurück:\n\n${text.trim()}`
-                                    }
-                                ]
-                            }
-                        ]
-                    })
-                }
-            );
-
-            const data = await res.json();
-
-            const translation =
-                data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
-
-            callback(translation);
-
-        } catch (err) {
-
-            console.error("Gemini error:", err);
+                    {
+                        role: 'user',
+                        content: text.trim()
+                    }
+                ],
+                temperature: 0
+            })
+        })
+        .then(res => res.json())
+        .then(json => {
+            console.log('[Groq] Antwort:', json);
+            callback(json.choices[0].message.content.trim());
+        })
+        .catch(err => {
+            console.error('[Groq] Fehler:', err);
             callback(null);
-
-        }
+        });
     }
 
     function insertTranslation(translation) {
-
-        const targetDiv = document.querySelector(
-            ".text-p2.text-gray-dark.mt-1.text-right"
-        );
-
-        if (targetDiv && translation) {
+        console.log('[Groq] Übersetzung:', translation);
+        const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
+        if (targetDiv) {
             targetDiv.textContent = translation;
+        } else {
+            console.warn('[Groq] Ziel-Element nicht gefunden!');
         }
-
     }
 
     function handler(e) {
-
-        if (e.key !== "Enter") return;
-
+        if (e.key !== 'Enter') return;
         const editable = e.currentTarget;
         const text = editable.innerText;
-
         if (active) {
-
             e.preventDefault();
             e.stopPropagation();
-
             fetchTranslation(text, (translation) => {
-
-                currentTranslation = translation;
-                insertTranslation(translation);
-
+                if (translation) insertTranslation(translation);
             });
-
-        } else {
-
-            currentTranslation = null;
-
         }
     }
 
     function attachListeners(editable) {
-
-        editable.removeEventListener("keydown", handler);
-        editable.addEventListener("keydown", handler);
-
+        editable.removeEventListener('keydown', handler);
+        editable.addEventListener('keydown', handler);
     }
 
     function reattachAll() {
-
-        const editables = document.querySelectorAll(
-            'div[contenteditable="true"]'
-        );
-
+        const editables = document.querySelectorAll('div[contenteditable="true"]');
+        console.log('[Groq] Textfelder gefunden:', editables.length);
         editables.forEach(attachListeners);
-
     }
 
-    const observer = new MutationObserver(() => {
-        reattachAll();
-    });
-
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-
+    const observer = new MutationObserver(() => reattachAll());
+    observer.observe(document.body, { childList: true, subtree: true });
 })();
