@@ -54,7 +54,7 @@
     const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
     if (targetDiv) {
         targetDiv.textContent = translation;
-        targetDiv.style.opacity = '0.5';
+        targetDiv.style.opacity = '0.25';
     } else {
         console.warn('[Groq] Ziel-Element nicht gefunden!');
     }
@@ -82,7 +82,7 @@
     const editables = document.querySelectorAll('div[contenteditable="true"]');
     console.log('[Groq] Textfelder gefunden:', editables.length);
     editables.forEach(el => {
-        el.style.opacity = active ? '0.2' : '1';
+        el.style.opacity = active ? '0.1' : '1';
         attachListeners(el);
     });
 }
