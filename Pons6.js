@@ -5,62 +5,32 @@
     let active = false;
     let dimEnabled = true;
 
-    // Unabhängige Opacity für beide Felder (1.0 = voll sichtbar)
-    let opacityInput = 1.0;
-    let opacityOutput = 0.25;
+    let opacityInput = 0.1;   // Standard wie vorher (aktiv)
+    let opacityOutput = 0.25; // Standard wie vorher
 
-    // Aktuell ausgewähltes Feld: 'input' oder 'output'
     let selectedField = 'input';
 
     console.log('[Pons Translator] loaded');
-
-    // Kleines Status-HUD
-    const hud = document.createElement('div');
-    hud.style.cssText = `
-        position: fixed; bottom: 20px; right: 20px; z-index: 99999;
-        background: rgba(0,0,0,0.75); color: white;
-        font: 13px monospace; padding: 8px 12px; border-radius: 8px;
-        pointer-events: none; opacity: 0; transition: opacity 0.3s;
-    `;
-    document.body.appendChild(hud);
-    let hudTimeout;
-    function showHud(msg) {
-        hud.textContent = msg;
-        hud.style.opacity = '1';
-        clearTimeout(hudTimeout);
-        hudTimeout = setTimeout(() => hud.style.opacity = '0', 1500);
-    }
 
     document.addEventListener('keydown', (e) => {
         if (!e.shiftKey || !e.altKey) return;
         const key = e.key.toLowerCase();
 
-        // Translator ein/aus
         if (key === 'x') {
             active = !active;
             console.log('[Info]', active ? 'Aktiv' : 'Pausiert');
-            showHud(active ? '🟢 Translator AN' : '🔴 Translator AUS');
             reattachAll();
         }
 
-        // Transparenz ein/aus
         if (key === 'c') {
             dimEnabled = !dimEnabled;
-            showHud(dimEnabled ? '🔅 Dimmen AN' : '🔆 Dimmen AUS');
+            console.log('[Info] Transparenz:', dimEnabled ? 'An' : 'Aus');
             applyAllOpacities();
         }
 
-        // Feld wählen
-        if (key === '1') {
-            selectedField = 'input';
-            showHud('✏️ Eingabefeld gewählt');
-        }
-        if (key === '2') {
-            selectedField = 'output';
-            showHud('📄 Übersetzungsfeld gewählt');
-        }
+        if (key === '1') selectedField = 'input';
+        if (key === '2') selectedField = 'output';
 
-        // Opacity anpassen
         if (e.key === 'ArrowUp') {
             e.preventDefault();
             adjustOpacity(+0.1);
@@ -74,24 +44,31 @@
     function adjustOpacity(delta) {
         if (selectedField === 'input') {
             opacityInput = Math.min(1, Math.max(0, opacityInput + delta));
-            showHud(`✏️ Eingabe: ${Math.round(opacityInput * 100)}%`);
+            console.log('[Pons] Eingabe Opacity:', Math.round(opacityInput * 100) + '%');
         } else {
             opacityOutput = Math.min(1, Math.max(0, opacityOutput + delta));
-            showHud(`📄 Übersetzung: ${Math.round(opacityOutput * 100)}%`);
+            console.log('[Pons] Übersetzung Opacity:', Math.round(opacityOutput * 100) + '%');
         }
         applyAllOpacities();
     }
 
     function applyAllOpacities() {
-        // Eingabefelder
         const editables = document.querySelectorAll('div[contenteditable="true"]');
         editables.forEach(el => {
-            el.style.opacity = dimEnabled ? opacityInput : '1';
+            if (!active) {
+                el.style.opacity = '1'; // inaktiv = immer voll sichtbar
+            } else {
+                el.style.opacity = dimEnabled ? opacityInput : '1';
+            }
         });
-        // Übersetzungsfeld
+
         const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
         if (targetDiv) {
-            targetDiv.style.opacity = dimEnabled ? opacityOutput : '1';
+            if (!active) {
+                targetDiv.style.opacity = '1'; // inaktiv = immer voll sichtbar
+            } else {
+                targetDiv.style.opacity = dimEnabled ? opacityOutput : '1';
+            }
         }
     }
 
@@ -134,7 +111,7 @@
         const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
         if (targetDiv) {
             targetDiv.textContent = translation;
-            targetDiv.style.opacity = dimEnabled ? opacityOutput : '1';
+            targetDiv.style.opacity = (active && dimEnabled) ? opacityOutput : '1';
         } else {
             console.warn('[Pons] Target element not found!');
         }
@@ -161,9 +138,7 @@
     function reattachAll() {
         const editables = document.querySelectorAll('div[contenteditable="true"]');
         console.log('[Pons] Text fields found:', editables.length);
-        editables.forEach(el => {
-            attachListeners(el);
-        });
+        editables.forEach(el => attachListeners(el));
         applyAllOpacities();
     }
 
