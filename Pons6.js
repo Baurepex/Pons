@@ -18,13 +18,12 @@
 
         if (key === 'x') {
             active = !active;
-            console.log('[Info]', active ? 'Aktiv' : 'Pausiert');
+            console.log('[Info]', active ? 'activ' : 'paused');
             reattachAll();
         }
 
         if (key === 'c') {
             dimEnabled = !dimEnabled;
-            console.log('[Info] Transparenz:', dimEnabled ? 'An' : 'Aus');
             applyAllOpacities();
         }
 
@@ -44,10 +43,10 @@
     function adjustOpacity(delta) {
         if (selectedField === 'input') {
             opacityInput = Math.min(1, Math.max(0, opacityInput + delta));
-            console.log('[Pons] Eingabe Opacity:', Math.round(opacityInput * 100) + '%');
+            
         } else {
             opacityOutput = Math.min(1, Math.max(0, opacityOutput + delta));
-            console.log('[Pons] Übersetzung Opacity:', Math.round(opacityOutput * 100) + '%');
+            
         }
         applyAllOpacities();
     }
