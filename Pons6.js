@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    const GROQ_API_KEY = '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'; // <-- eintragen
+    const GROQ_API_KEY = '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'; // <-- eintragen
     const GROQ_MODEL = 'llama-3.3-70b-versatile';
     let active = false;
     let dimEnabled = true;
