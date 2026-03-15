@@ -61,17 +61,17 @@
 }
 
     function handler(e) {
-        if (e.key !== 'Enter') return;
-        const editable = e.currentTarget;
-        const text = editable.innerText;
-        if (active) {
-            e.preventDefault();
-            e.stopPropagation();
-            fetchTranslation(text, (translation) => {
-                if (translation) insertTranslation(translation);
-            });
-        }
+    if (e.key !== 'Enter') return;
+    const editable = e.currentTarget;
+    const text = editable.innerText;
+    if (active) {
+        e.preventDefault();
+        e.stopPropagation();
+        fetchTranslation(text, (translation) => {
+            if (translation) insertTranslation(translation);
+        });
     }
+}
 
     function attachListeners(editable) {
         editable.removeEventListener('keydown', handler);
@@ -79,10 +79,13 @@
     }
 
     function reattachAll() {
-        const editables = document.querySelectorAll('div[contenteditable="true"]');
-        console.log('[Groq] Textfelder gefunden:', editables.length);
-        editables.forEach(attachListeners);
-    }
+    const editables = document.querySelectorAll('div[contenteditable="true"]');
+    console.log('[Groq] Textfelder gefunden:', editables.length);
+    editables.forEach(el => {
+        el.style.opacity = active ? '0.2' : '1';
+        attachListeners(el);
+    });
+}
 
     const observer = new MutationObserver(() => reattachAll());
     observer.observe(document.body, { childList: true, subtree: true });
