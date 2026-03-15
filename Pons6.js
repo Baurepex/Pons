@@ -5,8 +5,8 @@
     let active = false;
     let dimEnabled = true;
 
-    let opacityInput = 0.1;   // Standard wie vorher (aktiv)
-    let opacityOutput = 0.25; // Standard wie vorher
+    let opacityInput = 0.1;
+    let opacityOutput = 0.25;
 
     let selectedField = 'input';
 
@@ -14,27 +14,33 @@
 
     document.addEventListener('keydown', (e) => {
         if (!e.shiftKey || !e.altKey) return;
-        const key = e.key.toLowerCase();
 
-        if (key === 'x') {
+        if (e.code === 'KeyX') {
             active = !active;
-            console.log('[Info]', active ? 'activ' : 'paused');
+            console.log('[Info]', active ? 'Active' : 'Paused');
             reattachAll();
         }
 
-        if (key === 'c') {
+        if (e.code === 'KeyC') {
             dimEnabled = !dimEnabled;
+            console.log('[Info] Dim:', dimEnabled ? 'On' : 'Off');
             applyAllOpacities();
         }
 
-        if (key === '1') selectedField = 'input';
-        if (key === '2') selectedField = 'output';
+        if (e.code === 'Digit1') {
+            selectedField = 'input';
+            console.log('[Info] Field: Input');
+        }
+        if (e.code === 'Digit2') {
+            selectedField = 'output';
+            console.log('[Info] Field: Output');
+        }
 
-        if (e.key === 'ArrowUp') {
+        if (e.code === 'ArrowUp') {
             e.preventDefault();
             adjustOpacity(+0.1);
         }
-        if (e.key === 'ArrowDown') {
+        if (e.code === 'ArrowDown') {
             e.preventDefault();
             adjustOpacity(-0.1);
         }
@@ -43,10 +49,10 @@
     function adjustOpacity(delta) {
         if (selectedField === 'input') {
             opacityInput = Math.min(1, Math.max(0, opacityInput + delta));
-            
+            console.log('[Pons] Input opacity:', Math.round(opacityInput * 100) + '%');
         } else {
             opacityOutput = Math.min(1, Math.max(0, opacityOutput + delta));
-            
+            console.log('[Pons] Output opacity:', Math.round(opacityOutput * 100) + '%');
         }
         applyAllOpacities();
     }
@@ -54,25 +60,17 @@
     function applyAllOpacities() {
         const editables = document.querySelectorAll('div[contenteditable="true"]');
         editables.forEach(el => {
-            if (!active) {
-                el.style.opacity = '1'; // inaktiv = immer voll sichtbar
-            } else {
-                el.style.opacity = dimEnabled ? opacityInput : '1';
-            }
+            el.style.opacity = (active && dimEnabled) ? opacityInput : '1';
         });
 
         const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
         if (targetDiv) {
-            if (!active) {
-                targetDiv.style.opacity = '1'; // inaktiv = immer voll sichtbar
-            } else {
-                targetDiv.style.opacity = dimEnabled ? opacityOutput : '1';
-            }
+            targetDiv.style.opacity = (active && dimEnabled) ? opacityOutput : '1';
         }
     }
 
     function fetchTranslation(text, callback) {
-        console.log('[Pons] send request for:', text);
+        console.log('[Pons] Sending request for:', text);
         fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -96,7 +94,7 @@
         })
         .then(res => res.json())
         .then(json => {
-            console.log('[Pons] Antwort:', json);
+            console.log('[Pons] Response:', json);
             callback(json.choices[0].message.content.trim());
         })
         .catch(err => {
@@ -106,7 +104,7 @@
     }
 
     function insertTranslation(translation) {
-        console.log('[Pons] Übersetzung:', translation);
+        console.log('[Pons] Translation:', translation);
         const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
         if (targetDiv) {
             targetDiv.textContent = translation;
