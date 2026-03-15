@@ -5,7 +5,7 @@
     const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
     let active = false;
-    console.log('[Groq Translator] Geladen');
+    console.log('[Pons Translator] loaded');
 
     document.addEventListener('keydown', (e) => {
         if (e.shiftKey && e.altKey && e.key.toLowerCase() === 'x') {
@@ -16,7 +16,7 @@
     });
 
     function fetchTranslation(text, callback) {
-        console.log('[Groq] Sende Anfrage für:', text);
+        console.log('[Pons] Sende Anfrage für:', text);
         fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -40,23 +40,23 @@
         })
         .then(res => res.json())
         .then(json => {
-            console.log('[Groq] Antwort:', json);
+            console.log('[Pons] Antwort:', json);
             callback(json.choices[0].message.content.trim());
         })
         .catch(err => {
-            console.error('[Groq] Fehler:', err);
+            console.error('[Pons] Fehler:', err);
             callback(null);
         });
     }
 
     function insertTranslation(translation) {
-    console.log('[Groq] Übersetzung:', translation);
+    console.log('[Pons] Übersetzung:', translation);
     const targetDiv = document.querySelector('.text-p2.text-gray-dark.mt-1.text-right');
     if (targetDiv) {
         targetDiv.textContent = translation;
         targetDiv.style.opacity = '0.25';
     } else {
-        console.warn('[Groq] Ziel-Element nicht gefunden!');
+        console.warn('[Pons] Ziel-Element nicht gefunden!');
     }
 }
 
@@ -80,7 +80,7 @@
 
     function reattachAll() {
     const editables = document.querySelectorAll('div[contenteditable="true"]');
-    console.log('[Groq] Textfelder gefunden:', editables.length);
+    console.log('[Pons] Textfelder gefunden:', editables.length);
     editables.forEach(el => {
         el.style.opacity = active ? '0.1' : '1';
         attachListeners(el);
