@@ -7,7 +7,7 @@ param(
     [string[]]$Words
 )
 
-$GROQ_API_KEY = "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"   # <-- eintragen
+$GROQ_API_KEY = "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"   # <-- eintragen
 $GROQ_MODEL   = "llama-3.3-70b-versatile"
 
 function Translate($text) {
