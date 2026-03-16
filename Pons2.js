@@ -1,7 +1,3 @@
-# lat.ps1 - Latein-Übersetzer via Groq
-# Verwendung: lat "Veni, vidi, vici"
-#             lat          (dann Eingabe im interaktiven Modus)
-
 param(
     [Parameter(ValueFromRemainingArguments)]
     [string[]]$Words
